@@ -1,0 +1,14 @@
+<div class="gls-auto-grabber" style="display: none;">
+    <p id="gls_name"></p>
+    <p id="gls_adress"></p>
+    <p id="gls_city"></p>
+    <p id="gls_postcode"></p>
+    <p id="gls_country"></p>
+    <p id="gls_telephone"></p>
+    <p id="gls_email"></p>
+    <p id="gls_id"></p>
+</div>
+<div style="margin-top: 300px"></div>
+<div class="gls-confirmation-wrapper" style="display: none">
+    <p>De order van Danny Huigen is gecopierd naar uw GLS klembord ( Sample text :) )</p>
+</div>

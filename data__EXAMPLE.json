@@ -1,0 +1,9 @@
+//
+//    Example of the json "data.json" file
+//    Create a "data.json" file and change values with your delis login
+//
+
+{
+  "delisId": "delis-username01",
+  "delisPassword": "delis-password-010203"
+}

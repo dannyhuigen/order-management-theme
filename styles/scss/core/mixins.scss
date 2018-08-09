@@ -1,0 +1,266 @@
+/// poly-fluid-sizing
+/// Generate linear interpolated size values through multiple break points
+/// @param $property - A string CSS property name
+/// @param $map - A SASS map of viewport unit and size value pairs
+/// @requires function linear-interpolation
+/// @requires function map-sort
+
+/// list-remove
+/// Remove an item from a list
+/// @param $list - A SASS list
+/// @param $index - The list index to remove
+/// @returns A SASS list
+/// @author Jake Wilson <jake.e.wilson@gmail.com>
+@function list-remove($list, $index) {
+  $newList: ();
+  @for $i from 1 through length($list) {
+    @if $i != $index {
+      $newList: append($newList, nth($list,$i), 'space');
+    }
+  }
+  @return $newList;
+}
+
+/// list-sort
+/// Sort a SASS list
+/// @param $list - A SASS list
+/// @returns A sorted SASS list
+/// @requires function list-remove
+/// @author Jake Wilson <jake.e.wilson@gmail.com>
+@function list-sort($list) {
+  $sortedlist: ();
+  @while length($list) > 0 {
+    $value: nth($list,1);
+    @each $item in $list {
+      @if $item < $value {
+        $value: $item;
+      }
+    }
+    $sortedlist: append($sortedlist, $value, 'space');
+    $list: list-remove($list, index($list, $value));
+  }
+  @return $sortedlist;
+}
+
+/// map-sort
+/// Sort map by keys
+/// @param $map - A SASS map
+/// @returns A SASS map sorted by keys
+/// @requires function list-sort
+/// @author Jake Wilson <jake.e.wilson@gmail.com>
+@function map-sort($map) {
+  $keys: list-sort(map-keys($map));
+  $sortedMap: ();
+  @each $key in $keys {
+    $sortedMap: map-merge($sortedMap, ($key: map-get($map, $key)));
+  }
+  @return $sortedMap;
+}
+
+
+
+/// linear-interpolation
+/// Calculate the definition of a line between two points
+/// @param $map - A SASS map of viewport widths and size value pairs
+/// @returns A linear equation as a calc() function
+/// @example
+///   font-size: linear-interpolation((320px: 18px, 768px: 26px));
+/// @author Jake Wilson <jake.e.wilson@gmail.com>
+@function linear-interpolation($map) {
+  $keys: map-keys($map);
+  @if (length($keys) != 2) {
+    @error "linear-interpolation() $map must be exactly 2 values";
+  }
+  // The slope
+  $m: (map-get($map, nth($keys, 2)) - map-get($map, nth($keys, 1)))/(nth($keys, 2) - nth($keys,1));
+
+  // The y-intercept
+  $b: map-get($map, nth($keys, 1)) - $m * nth($keys, 1);
+
+  // Determine if the sign should be positive or negative
+  $sign: "+";
+  @if ($b < 0) {
+    $sign: "-";
+    $b: abs($b);
+  }
+
+  @return calc(#{$m*100}vw #{$sign} #{$b});
+}
+
+
+/// @example
+///   @include poly-fluid-sizing('font-size', (576px: 22px, 768px: 24px, 992px: 34px));
+/// @author Jake Wilson <jake.e.wilson@gmail.com>
+@mixin poly-fluid-sizing($property, $map) {
+  // Get the number of provided breakpoints
+  $length: length(map-keys($map));
+
+  // Error if the number of breakpoints is < 2
+  @if ($length < 2) {
+    @error "poly-fluid-sizing() $map requires at least values"
+  }
+
+  // Sort the map by viewport width (key)
+  $map: map-sort($map);
+  $keys: map-keys($map);
+
+  // Minimum size
+  #{$property}: map-get($map, nth($keys,1));
+
+  // Interpolated size through breakpoints
+  @for $i from 1 through ($length - 1) {
+    @media (min-width:nth($keys,$i)) {
+      #{$property}: linear-interpolation((nth($keys,$i): map-get($map, nth($keys,$i)), nth($keys,($i+1)): map-get($map, nth($keys,($i + 1)))));
+    }
+  }
+
+  // Maxmimum size
+  @media (min-width:nth($keys,$length)) {
+    #{$property}: map-get($map, nth($keys,$length));
+  }
+}
+
+@mixin fz($size) {
+
+  // biggest size,max bp, mobile size
+  $maxsizes: (
+                  (l, 54px, 1280px, 30px),
+                  (xl, 100px, 1280px, 40px),
+
+  );
+  // designfontsize, min width, min fontsize, max width, max fontsize
+  $sizes: (
+                  (l, 768px, 36px, 1280px, 54px),
+                  (xl, 400px, 40px, 1280px, 100px),
+
+  );
+
+  @each $sizename, $size_max, $minwidth,$size_min in $maxsizes {
+    @if $sizename == $size {
+      // Minimum size
+      font-size:$size_min;
+      line-height:calc(#{$size_min} + 2px);
+    }
+  }
+
+  @each $design_size, $minwidth,$size_min,$maxwidth,$size_max in $sizes {
+    @if $design_size == $size {
+      @media (min-width: $minwidth) {
+        $map: ($minwidth: $size_min, $maxwidth: $size_max);
+        @include poly-fluid-sizing('font-size', $map);
+        @include poly-fluid-sizing('line-height', $map);
+        //font-size: linear-interpolation($map);
+      }
+    }
+  }
+
+  @each $sizename, $size_max, $minwidth,$size_min in $maxsizes {
+    @if $sizename == $size {
+      // Maximum size
+      @media (min-width:$minwidth) {
+        font-size: $size_max;
+        line-height: calc(#{$size_max} + 2px);
+      }
+    }
+  }
+}
+
+@mixin lh($size) {
+
+  // biggest size,max bp, mobile size
+  $maxsizes: (
+                  (32px, 1280px, 32px),
+                  (36px, 1280px, 36px),
+                  (44px, 1280px, 28px),
+  );
+  // designfontsize, min width, min fontsize, max width, max fontsize
+  $sizes: (
+                  (32px, 768px, 32px, 1280px, 32px),
+                  (36px, 768px, 24px, 1280px, 36px),
+                  (44px, 768px, 24px, 1280px, 34px),
+                  (44px, 576px, 22px, 768px, 24px),
+  );
+
+  @each $size_max, $minwidth,$size_min in $maxsizes {
+    @if $size_max == $size {
+      // Minimum size
+      line-height:$size_min;
+    }
+  }
+
+
+  @each $design_size, $minwidth,$size_min,$maxwidth,$size_max in $sizes {
+    @if $design_size == $size {
+      @media (min-width: $minwidth) {
+        $map: ($minwidth: $size_min, $maxwidth: $size_max);
+        @include poly-fluid-sizing('line-height', $map);
+        //font-size: linear-interpolation($map);
+      }
+    }
+  }
+
+  @each $size_max, $minwidth,$size_min in $maxsizes {
+    @if $size_max == $size {
+      // Maximum size
+      @media (min-width:$minwidth) {
+        line-height: $size_max;
+      }
+    }
+  }
+}
+
+@mixin create_fontsize_classes() {
+
+  $fontsizes_classes: (16:16px,18:18px,20:20px,22:22px,28:28px,36:36px,44:44px,56:56px,72:72px,120:120px);
+
+  @each $classname,$fontsize in $fontsizes_classes {
+
+    ._fz#{$classname} {
+      @include fz($fontsize);
+    }
+  }
+}
+
+@include create_fontsize_classes();
+
+@mixin create_lineheight_classes() {
+
+  $lineheight_classes: (36:36px,44:44px);
+
+  @each $classname,$lineheight in $lineheight_classes {
+
+    ._lh#{$classname} {
+      @include lh($lineheight);
+    }
+  }
+}
+
+@include create_lineheight_classes();
+
+
+
+@mixin skew($side: right, $deg: -20deg, $right: -15px, $left: -15px, $width: 30px, $bg: #fff) {
+  position: relative;
+
+  &:before {
+    z-index: -1;
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+
+    @if $side == right {
+      right: $right;
+    }
+    @else if $side == left {
+      left: $left;
+    }
+
+    display: block;
+    width: $width;
+    background: $bg;
+    -webkit-transform: skew($deg);
+    -ms-transform: skew($deg);
+    transform: skew($deg);
+  }
+}

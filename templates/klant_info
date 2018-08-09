@@ -1,0 +1,69 @@
+<div class="row" style="margin-top: 20px;">
+    <div class="col-12 js-expander">
+
+        <?php
+
+        //main heeft huisnummer in adress
+        if(1 === preg_match('~[0-9]~', $order->order_shipping_address_1)){
+            preg_match('/([^\d]+)\s?(.+)/i', $order->order_shipping_address_1, $adress);
+            $straat_naam = $adress[1];
+            $straat_nummer = $adress[2];
+        }
+        else{
+            $straat_naam = $order->order_shipping_address_1;
+            $straat_nummer = $order->order_shipping_houseno;
+        }
+
+        ?>
+
+        <div class="row order-row" style="padding: 20px 0;">
+            <div style="<?php if($order->order_status === "completed"){?> background-color: limegreen;<?php } elseif($order->order_status === "on-hold"){ echo "background-color: goldenrod;";}else{ echo "background-color: aquamarine;";} ?>" class="order-colum col-2"><?php echo $order->order_status; ?></div>
+            <div class="col-2"></div>
+            <div class="order-colum col-2"><a target="_blank" class="clicker" href="<?php echo $site_url . "?changeStatus=" . dec_enc("encrypt", $order_id);?>">Complete order</a></div>
+            <div class="order-colum col-2"><a class="clicker" href="<?php echo $order->edit_url; ?>">Wordpress</a></div>
+            <div class="order-colum col-2"><a class="clicker" href="<?php echo str_replace("%20" , " " , get_site_url() ."/createdpdorder?sender_name=". $current_shop["shop_name"]."?sender_street=".$current_shop['sender_street']."?sender_houseNo=".$current_shop['sender_houseNo']."?sender_country=".$current_shop['sender_country']."?sender_zipCode=".$current_shop['sender_zipCode']."?sender_city=".$current_shop['sender_city']."?reciept_name=". $order->order_billing_first_name . " ". $order->order_shipping_last_name ."?reciept_street=".$straat_naam."?reciept_houseNo=".$straat_nummer."?reciept_country=".$order->order_shipping_country."?reciept_zipCode=".$order->order_shipping_postcode."?reciept_city=".$order->order_shipping_city); ?>">Creer DPD</a></div>
+            <div class="order-colum col-2"><a class="clicker js-dpd-clicker" href="" data-name="<?php echo $order->order_shipping_first_name . " " . $order->order_shipping_last_name; ?>" data-adress="<?php echo $straat_naam . " " . $straat_nummer ?>" data-city="<?php echo $order->order_shipping_city; ?>" data-postcode="<?php echo $order->order_shipping_postcode; ?>" data-country="<?php echo $order->order_shipping_country; ?>" data-telephone="<?php echo $order->order_shipping_phone; ?>" data-email="<?php echo $order->order_billing_email; ?>" data-id="<?php echo $order->order_id; ?>" >Copy GLS</a></div>
+            <div class="col-12">
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-2">
+                        <h3>Billing</h3>
+                        <span><?php echo $order->order_billing_first_name; ?> <?php echo $order->order_billing_last_name; ?></span><br>
+                        <span><?php echo $order->order_billing_company; ?></span><br>
+                        <span><?php echo $order->order_billing_address_1; ?></span><br>
+                        <span><?php echo $order->order_billing_address_2; ?></span><br>
+                        <span><?php echo $order->order_billing_city; ?></span><br>
+                        <span><?php echo $order->order_billing_state; ?></span><br>
+                        <span><?php echo $order->order_billing_postcode; ?></span><br>
+                        <span><?php echo $order->order_billing_country; ?></span><br>
+                    </div>
+                    <div class="col-2">
+                        <h3>Shipping</h3>
+                        <span><?php echo $order->order_shipping_first_name; ?> <?php echo $order->order_billing_last_name; ?></span><br>
+                        <span><?php echo $order->order_shipping_company; ?></span><br>
+                        <span><?php echo $order->order_shipping_address_1; ?></span><br>
+                        <span><?php echo $order->order_shipping_address_2; ?></span><br>
+                        <span><?php echo $order->order_shipping_city; ?></span><br>
+                        <span><?php echo $order->order_shipping_state; ?></span><br>
+                        <span><?php echo $order->order_shipping_postcode; ?></span><br>
+                        <span><?php echo $order->order_shipping_country; ?></span><br>
+                    </div>
+                    <div class="col-2">
+                        <h3>Contact</h3>
+                        <span><?php echo $order->order_billing_first_name; ?> <?php echo $order->order_billing_last_name; ?></span><br>
+                        <span><?php echo $order->order_billing_company; ?></span><br>
+                        <span></span><br>
+                        <span><?php echo $order->order_billing_email; ?></span><br>
+                        <span><?php echo $order->order_billing_phone; ?></span>
+                    </div>
+                    <div class="col-2">
+                        <span>Debug:</span>
+                        <span>straatnaam: <?php echo  $straat_naam?></span><br>
+                        <span>straatnummer <?php echo $straat_nummer ?></span>
+                    </div>
+                    <div class="col-2"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

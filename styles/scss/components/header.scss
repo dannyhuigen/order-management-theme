@@ -1,0 +1,55 @@
+.header{
+
+  height: 100px;
+  width: 100%;
+  background-color: rgba(255,255,255,0.9);
+  box-shadow: 0 0 20px 0 black;
+  margin-bottom: 50px;
+
+  .content-wrapper{
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: 100%;
+    position: relative;
+  }
+
+  img{
+    height: 60px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+  }
+
+  h1{
+    align-self: flex-end;
+    margin-bottom: 20px;
+    color: #1B598D;
+    margin-left: 15px;
+  }
+
+  .link-icons{
+    position: absolute;
+    bottom: 10px;
+    right: 0;
+
+    li{
+      display: inline-block;
+      list-style-type: none;
+    }
+  }
+
+  .redirect-icon{
+    width: 35px;
+    height: 35px;
+    background-size: cover;
+    background-position: center;
+    display: block;
+    margin-left: 35px;
+    transition: .2s all;
+    &:hover{
+      cursor: pointer;
+      transform: scale(1.5);
+    }
+  }
+
+}

@@ -1,0 +1,6 @@
+<?php
+
+//Function to check if user with admin rights is logged in
+if (!current_user_can('manage_options')){
+    header('Location: '.wp_login_url( $_SERVER['REQUEST_URI']));
+}
