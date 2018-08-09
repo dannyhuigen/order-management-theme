@@ -78,7 +78,7 @@ $shop_info = getShopByGetUrl(explode("?" , $get_shop_url)[0]);
                             <div class="order-colum col-1"><?php echo $order->order_date_created; ?></div>
                             <div style="<?php if($order->order_status === "completed"){?> background-color: limegreen;<?php } elseif($order->order_status === "on-hold"){ echo "background-color: goldenrod;";}else{ echo "background-color: aquamarine;";} ?>" class="order-colum col-1"><?php echo $order->order_status; ?></div>
                             <div class="order-colum col-1"><a target="_blank" class="clicker" href="<?php echo $get_shop_url . "?changeStatus=" . dec_enc("encrypt", $order->order_id);?>">Complete order</a></div>
-                            <div style="padding: 0;" class="col-1 <?php if($straat_debug){ echo "sb-danger"; }?>">
+                            <div style="padding: 0;" class="col-1 <?php if($straat_debug){ echo "sb-danger"; }else{echo "sb-correct";}?>">
                                 <?php if($straat_debug){
                                     echo "Let op!";
                                 } else{
