@@ -31,7 +31,23 @@ $order_info = array(
     "reciept_zipCode" => getUrlParameterValue('reciept_zipCode'),
     "reciept_city" => getUrlParameterValue('reciept_city'),
     "reciept_email" => getUrlParameterValue('reciept_email'),
+    "saturday_delivery" => getUrlParameterValue('saturday_delivery'),
 );
+
+
+
+//$product_service_data = array(
+//    'orderType' => 'consignment',
+//);
+//
+//if($order_info["saturday_delivery"] == "true"){
+//    $product_service_data = array(
+//        'orderType' => 'consignment',
+//        'saturdayDelivery' => true,
+//    );
+//
+//}
+
 
 $all_variables_set = true;
 
@@ -94,6 +110,7 @@ if ($all_variables_set){
                     )
                 ,'productAndServiceData' => array(
                         'orderType' => 'consignment',
+                        'saturdayDelivery' => true,
                     )
                 )
             )
@@ -102,20 +119,13 @@ if ($all_variables_set){
         $decoded = base64_decode($result->orderResult->parcellabelsPDF);
         $file = ''. $order_info["sender_name"] . $order_info["reciept_zipCode"] .'.pdf';
 
+
         if (getUrlParameterValue("noDownload") !== "true"){
             file_put_contents($file, $result->orderResult->parcellabelsPDF);
         }
 
         if (file_exists($file)) {
             if (getUrlParameterValue("noDownload") !== "true"){
-//                file_put_contents($file, $result->orderResult->parcellabelsPDF);
-//                header('Content-Description: File Transfer');
-//                header('Content-Type: application/octet-stream');
-//                header('Content-Disposition: attachment; filename="'.basename($file).'"');
-//                header('Expires: 0');
-//                header('Cache-Control: must-revalidate');
-//                header('Pragma: public');
-//                header('Content-Length: ' . filesize($file));
                 header('Content-type: application/pdf');
                 header('Content-Disposition: attachment; filename="'.$order_info["sender_name"] . $order_info["reciept_zipCode"] .'.pdf'.'"');
                 echo $result->orderResult->parcellabelsPDF;
