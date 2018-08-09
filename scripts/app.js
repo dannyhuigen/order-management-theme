@@ -344,6 +344,12 @@ text["completed"] = "Completed";
 
 function updateAmountText($parentCounter){
     var orders =[];
+
+    var totalAmount = 0;
+    totalAmount += $parentCounter.find("div[data-orderstatus='on-hold']").length - 1;
+    totalAmount += $parentCounter.find("div[data-orderstatus='processing']").length - 1;
+    totalAmount += $parentCounter.find("div[data-orderstatus='pending']").length - 1;
+
     $parentCounter.find(".order-row").each(function () {
         var orderStatus = $(this).data("orderstatus");
         if (orders[orderStatus] == null){
@@ -356,7 +362,7 @@ function updateAmountText($parentCounter){
         $parentCounter.find(".js-checkbox[data-orderstatus='"+orderStatus+"']").html(text[orderStatus] + "<br>(" + orders[orderStatus] + ")");
     });
 
-    $parentCounter.find(".js-shop-title-wrapper h3").text("aantal orders: " + ( 50 - orders["completed"] ));
+    $parentCounter.find(".js-shop-title-wrapper h3").text("aantal orders: " + totalAmount);
 }
 // function startPopup(){
 //
